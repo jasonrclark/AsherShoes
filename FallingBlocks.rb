@@ -3,6 +3,7 @@ Shoes.app do
   falling << rect(100, 0, 90, 50, fill: blue)
 
   rect(0, 450, 10000, 10000, fill: brown)
+
   every(0.01) do
     falling.each do |fall|
       fall.top += 2

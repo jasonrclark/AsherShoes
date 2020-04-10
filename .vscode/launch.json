@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Shoes!!",
+            "type": "Ruby",
+            "request": "launch",
+            "program": "/Users/jasonclark/.rbenv/versions/jruby-9.2.11.1/bin/shoes-swt",
+            "args": [
+                "${file}"
+            ]
+        }
+    ]
+}
