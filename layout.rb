@@ -15,8 +15,8 @@ class Layout
   end
 
   def check_collisions(player, dx, dy)
-    player_h = (player.left .. player.left + player.width)
-    player_v = (player.top .. player.top + player.height)
+    player_h = (player.left + dx .. player.left + dx + player.width)
+    player_v = (player.top  + dy .. player.top  + dy + player.height)
 
     collisions = @floors.select do |floor|
       overlaps?(horizontal_range(floor), player_h) &&
@@ -24,14 +24,18 @@ class Layout
     end
 
     if collisions.any?
-      # Falling
-      if dy > 0
-        sorted_floors = collisions.sort do |floor|
-          floor.top
+      if dy > 0  # Falling
+        top_floor = collisions.min_by(&:top)
+        if top_floor
+          return [dx, top_floor.top - player.top - player.height]
         end
-
-        top_floor = sorted_floors.first
-        return [dx, top_floor.top - (player.top + player.height)]
+      elsif dy < 0  # Jumping
+        bottom_floor = collisions
+          .reject { |floor| floor.top >= player_v.end }
+          .max_by(&:top)
+        if bottom_floor
+          return [dx, (bottom_floor.top + bottom_floor.height) - player.top ]
+        end
       end
     end
 
