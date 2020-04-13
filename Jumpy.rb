@@ -1,21 +1,24 @@
 Shoes.app do
   @actions = {}
-  @player = rect 0, 450, 50, 50, fill: pink, stroke: blue
+  @player = [
+    rect(0, 450, 50, 50, fill: pink, stroke: blue),
+    rect(10, 460, 10, 10, fill: black)
+  ]
 
   @status = para ""
 
   every 0.01 do
     @status.text = @actions.inspect
 
-    @actions.each do |name, steps|
-      begin
-        dx, dy = steps.next
-        @player.left += dx
-        @player.top += dy
-      rescue StopIteration
-        steps.rewind
-        @actions.delete(name)
+    @actions.each do |name, action|
+      dx, dy = action.next
+      @player.each do |part|
+        part.left += dx
+        part.top += dy
       end
+    rescue StopIteration
+      action.rewind
+      @actions.delete(name)
     end
   end
 
