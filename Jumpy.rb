@@ -6,11 +6,12 @@ Shoes.app do
   }
 
   @player = [
-    rect(0, 440, 50, 50, fill: pink, stroke: blue),
-    rect(10, 450, 10, 10, fill: black),
+    rect(50, 440, 50, 50, fill: pink, stroke: blue),
+    rect(60, 450, 10, 10, fill: black),
   ]
 
   @layout = Layout.new(
+    rect(0, 300, 5, 190),
     rect(0, 490, 300, 5),
     rect(200, 430, 300, 5),
   )
@@ -37,12 +38,14 @@ Shoes.app do
     actual_dx, actual_dy = @layout.check_collisions(player_box,
                                                     proposed_dx, proposed_dy)
 
+    p [actual_dx, actual_dy]
+
     @player.each do |part|
       part.left += actual_dx
       part.top += actual_dy
     end
 
-    if @player.first.top > 1000
+    if @player.first.top > 2 * app.height
       game_over
     end
   end

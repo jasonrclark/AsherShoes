@@ -25,16 +25,41 @@ class Layout
 
     if collisions.any?
       if dy > 0  # Falling
-        top_floor = collisions.min_by(&:top)
+        top_floor = collisions
+          .reject { |floor| floor.top < player_v.begin }
+          .min_by(&:top)
+
         if top_floor
-          return [dx, top_floor.top - player.top - player.height]
+          print "."
+          dy = top_floor.top - player.top - player.height
         end
       elsif dy < 0  # Jumping
         bottom_floor = collisions
           .reject { |floor| floor.top >= player_v.end }
           .max_by(&:top)
+
         if bottom_floor
-          return [dx, (bottom_floor.top + bottom_floor.height) - player.top ]
+          print "^"
+          dy = (bottom_floor.top + bottom_floor.height) - player.top
+        end
+      end
+
+      if dx > 0 # Right
+        bump = collisions
+          .reject { |floor| floor.left <= player_h.begin }
+          .max_by(&:left)
+
+        if bump
+          require 'pry';binding.pry;
+          dx = bump.left - (player.left + player.width)
+        end
+      elsif dx < 0 # Left
+        bump = collisions
+          .reject { |floor| floor.absolute_right > player_h.end }
+          .max_by(&:absolute_right)
+
+        if bump
+          dx = (bump.left + bump.width) - player.left
         end
       end
     end
