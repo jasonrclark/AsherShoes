@@ -16,7 +16,7 @@ class Layout
 
   def check_collisions(player, dx, dy)
     player_h = (player.left + dx .. player.left + dx + player.width)
-    player_v = (player.top  + dy .. player.top  + dy + player.height)
+    player_v = (player.top  + dy ... player.top  + dy + player.height)
 
     collisions = @floors.select do |floor|
       overlaps?(horizontal_range(floor), player_h) &&
@@ -40,17 +40,27 @@ class Layout
 
         if bottom_floor
           print "^"
-          dy = (bottom_floor.top + bottom_floor.height) - player.top
+          dy = [0, (bottom_floor.top + bottom_floor.height) - player.top].min
         end
       end
+    end
 
+    # Revise collections based on actual vertical movement
+    player_v = (player.top  + dy ... player.top  + dy + player.height)
+
+    collisions = @floors.select do |floor|
+      overlaps?(horizontal_range(floor), player_h) &&
+        overlaps?(vertical_range(floor), player_v)
+    end
+
+    if collisions.any?
       if dx > 0 # Right
         bump = collisions
           .reject { |floor| floor.left <= player_h.begin }
-          .max_by(&:left)
+          .min_by(&:left)
 
         if bump
-          require 'pry';binding.pry;
+          print "<"
           dx = bump.left - (player.left + player.width)
         end
       elsif dx < 0 # Left
@@ -59,6 +69,7 @@ class Layout
           .max_by(&:absolute_right)
 
         if bump
+          print ">"
           dx = (bump.left + bump.width) - player.left
         end
       end
